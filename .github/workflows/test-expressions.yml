@@ -30,14 +30,15 @@ jobs:
   test-variable:
     runs-on: ubuntu-latest
     steps:
-      - name: contains(fromJSON('["push", "pull_request"]'), github.event_name)
-        run: echo ${{ contains(fromJSON('["push", "pull_request"]'), github.event_name) }}
-      - name: startsWith(github.event.pull_request.title, 'RELEASES:')
-        run: echo ${{ startsWith(github.event.pull_request.title, 'RELEASES:') }}
-      - name: startsWith(github.event.head_commit.message, 'RELEASES:')
+      - name: is 'push' event
+        run: echo ${{ github.event_name == 'push' }}
+      - name: commit message starts with 'RELEASES:'
         run: echo ${{ startsWith(github.event.head_commit.message, 'RELEASES:') }}
-      - name: contains(github.event.pull_request.labels.*.name, 'RELEASES')
-        if: contains(github.event.pull_request.labels.*.name, 'RELEASES')
+      - name: is 'pull_request' event
+        run: echo ${{ github.event_name == 'pull_request' }}
+      - name: pull_request title starts with 'RELEASES:'
+        run: echo ${{ startsWith(github.event.pull_request.title, 'RELEASES:') }}
+      - name: pull_request labels.*.name contains 'RELEASES'
         run: echo ${{ contains(github.event.pull_request.labels.*.name, 'RELEASES') }}
       - name: env.IS_RELEASE_CANDIDATE
         run: echo ${{ env.IS_RELEASE_CANDIDATE }}
