@@ -27,6 +27,8 @@ jobs:
         run: echo ${{ contains(fromJSON('["push", "pull_request"]'), github.event_name) }}
       - name: startsWith(github.event.pull_request.title, 'RELEASES:')
         run: echo ${{ startsWith(github.event.pull_request.title, 'RELEASES:') }}
+      - name: startsWith(github.event.head_commit.title, 'RELEASES:')
+        run: echo ${{ startsWith(github.event.head_commit.message, 'RELEASES:') }}
       - name: contains(github.event.pull_request.labels.*.name, 'RELEASES')
         if: contains(github.event.pull_request.labels.*.name, 'RELEASES')
         run: echo ${{ contains(github.event.pull_request.labels.*.name, 'RELEASES') }}
