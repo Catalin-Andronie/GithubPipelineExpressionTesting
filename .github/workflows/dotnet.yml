@@ -1,0 +1,36 @@
+name: .Net
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+
+env:
+  IS_RELEASE_CANDIDATE: |
+    ${{
+      contains(fromJSON('["push", "pull_request"]'), github.event_name) &&
+      startsWith(github.event.pull_request.title, 'RELEASES:') &&
+      contains(github.event.pull_request.labels.*.name, 'RELEASES')
+    }}
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    timeout-minutes: 0
+    steps:
+    - name: Check out
+      uses: actions/checkout@v2
+    - name: Setup .Net
+      uses: actions/setup-dotnet@v1
+      with:
+        dotnet-version: 8.0.x
+        include-prerelease: true
+    - name: Restore
+      run: dotnet restore
+    - name: Build
+      run: dotnet build --no-restore
+    - name: env.IS_RELEASE_CANDIDATE
+      run: echo ${{ env.IS_RELEASE_CANDIDATE }}
+    - name: Test
+      run: dotnet test --no-build --verbosity normal
