@@ -49,7 +49,7 @@ jobs:
       - name: env.IS_RELEASE_CANDIDATE
         run: echo ${{ env.IS_RELEASE_CANDIDATE }}
       - name: Tag Commit on Build Success
-        if: ${{ success() && github.event_name == 'pull_request' && env.IS_RELEASE_CANDIDATE }}
+        if: ${{ success() && github.event_name == 'pull_request' && github.ref_type != 'tag' && env.IS_RELEASE_CANDIDATE }}
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
