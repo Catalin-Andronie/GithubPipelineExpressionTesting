@@ -54,5 +54,5 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
           commit_sha=$(git rev-parse HEAD)
-          git tag -a RELEASES $commit_sha -m "Tagging last commit with RELEASES on successful build and test"
-          git push origin --tags
+          git tag -a RELEASES $commit_sha -m "Tagging last commit with RELEASES on successful build and test" --force
+          git push origin --tags --force
