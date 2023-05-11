@@ -2,6 +2,7 @@ name: Test GitHub expressions
 
 on:
   push:
+    tags: [ '*', 'tags/RELEASES' ]
     branches: [ main ]
   pull_request:
     branches: [ main ]
@@ -22,7 +23,8 @@ env:
       ||
       (
         github.event_name == 'push' &&
-        startsWith(github.event.head_commit.message, 'RELEASES:')
+        startsWith(github.event.head_commit.message, 'RELEASES:') &&
+        github.ref_name == 'RELEASES'
       )
     }}
 
@@ -34,6 +36,10 @@ jobs:
         run: echo ${{ github.event_name == 'push' }}
       - name: commit message starts with 'RELEASES:'
         run: echo ${{ startsWith(github.event.head_commit.message, 'RELEASES:') }}
+      - name: display github.ref_type
+        run: echo ${{ github.ref_type }}
+      - name: display github.ref_name
+        run: echo ${{ github.ref_name }}
       - name: is 'pull_request' event
         run: echo ${{ github.event_name == 'pull_request' }}
       - name: pull_request title starts with 'RELEASES:'
