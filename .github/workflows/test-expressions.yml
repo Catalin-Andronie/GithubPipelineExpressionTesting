@@ -48,3 +48,11 @@ jobs:
         run: echo ${{ contains(github.event.pull_request.labels.*.name, 'RELEASES') }}
       - name: env.IS_RELEASE_CANDIDATE
         run: echo ${{ env.IS_RELEASE_CANDIDATE }}
+      - name: Tag Commit on Build Success
+        if: ${{ success() && github.event_name == 'pull_request' && env.IS_RELEASE_CANDIDATE }}
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          commit_sha=$(git rev-parse HEAD)
+          git tag -a RELEASES $commit_sha -m "Tagging last commit with RELEASES on successful build and test"
+          git push origin --tags
