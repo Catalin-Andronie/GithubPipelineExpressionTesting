@@ -4,8 +4,7 @@ namespace SkipSpecificTests;
 
 public class UnitTest1
 {
-    [Fact]
-    [Trait("Category", "Integration")]
+    [Fact(Skip = "Skipping tests based on environment variable are not implmeneted yet.")]
     public void Should_Only_Run_When_Environment_Variable_IsReleaseCandidate()
     {
         string environmentVaribable =
