@@ -2,7 +2,7 @@ name: Test GitHub expressions
 
 on:
   push:
-    tags: [ '*', 'tags/RELEASES' ]
+    tags: [ 'RELEASES' ]
     branches: [ main ]
   pull_request:
     branches: [ main ]
