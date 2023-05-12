@@ -2,6 +2,7 @@ name: Test GitHub expressions
 
 on:
   push:
+    tags: [ 'RELEASES' ]
     branches: [ main ]
   pull_request:
     branches: [ main ]
@@ -22,7 +23,8 @@ env:
       ||
       (
         github.event_name == 'push' &&
-        startsWith(github.event.head_commit.message, 'RELEASES:')
+        startsWith(github.event.head_commit.message, 'RELEASES:') &&
+        github.ref_name == 'RELEASES'
       )
     }}
 
@@ -30,14 +32,27 @@ jobs:
   test-variable:
     runs-on: ubuntu-latest
     steps:
-      - name: contains(fromJSON('["push", "pull_request"]'), github.event_name)
-        run: echo ${{ contains(fromJSON('["push", "pull_request"]'), github.event_name) }}
-      - name: startsWith(github.event.pull_request.title, 'RELEASES:')
-        run: echo ${{ startsWith(github.event.pull_request.title, 'RELEASES:') }}
-      - name: startsWith(github.event.head_commit.message, 'RELEASES:')
+      - name: is 'push' event
+        run: echo ${{ github.event_name == 'push' }}
+      - name: commit message starts with 'RELEASES:'
         run: echo ${{ startsWith(github.event.head_commit.message, 'RELEASES:') }}
-      - name: contains(github.event.pull_request.labels.*.name, 'RELEASES')
-        if: contains(github.event.pull_request.labels.*.name, 'RELEASES')
+      - name: display github.ref_type
+        run: echo ${{ github.ref_type }}
+      - name: display github.ref_name
+        run: echo ${{ github.ref_name }}
+      - name: is 'pull_request' event
+        run: echo ${{ github.event_name == 'pull_request' }}
+      - name: pull_request title starts with 'RELEASES:'
+        run: echo ${{ startsWith(github.event.pull_request.title, 'RELEASES:') }}
+      - name: pull_request labels.*.name contains 'RELEASES'
         run: echo ${{ contains(github.event.pull_request.labels.*.name, 'RELEASES') }}
       - name: env.IS_RELEASE_CANDIDATE
         run: echo ${{ env.IS_RELEASE_CANDIDATE }}
+      - name: Tag Commit on Build Success
+        if: ${{ success() && github.event_name == 'pull_request' && github.ref_type != 'tag' && env.IS_RELEASE_CANDIDATE }}
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          commit_sha=$(git rev-parse HEAD)
+          git tag -a RELEASES $commit_sha -m "Tagging last commit with RELEASES on successful build and test" --force
+          git push origin --tags --force
