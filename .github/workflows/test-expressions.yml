@@ -5,8 +5,6 @@ on:
     tags: [ 'RELEASE' ]
     branches: [ main ]
   pull_request:
-    types:
-      - closed
     branches: [ main ]
 
 env:
@@ -50,6 +48,10 @@ jobs:
         run: echo ${{ contains(github.event.pull_request.labels.*.name, 'RELEASES') }}
       - name: env.IS_RELEASE_CANDIDATE
         run: echo ${{ env.IS_RELEASE_CANDIDATE }}
+      - name: github.event.pull_request.merged
+        run: echo ${{ github.event.pull_request.merged }}
+      - name: github.event.pull_request.mergeable
+        run: echo ${{ github.event.pull_request.mergeable }}
       - name: Tag Commit on Build Success
         if: ${{ success() && github.event_name == 'pull_request' && github.ref_type != 'tag' && env.IS_RELEASE_CANDIDATE }}
         env:
