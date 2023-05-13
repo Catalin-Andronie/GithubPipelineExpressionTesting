@@ -52,11 +52,8 @@ jobs:
         run: echo ${{ github.event.pull_request.merged }}
       - name: github.event.pull_request.mergeable
         run: echo ${{ github.event.pull_request.mergeable }}
-      - name: Tag Commit on Build Success
+      - name: Add Git Tag - Release
         if: ${{ success() && github.event_name == 'pull_request' && github.ref_type != 'tag' && env.IS_RELEASE_CANDIDATE }}
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
-          commit_sha=$(git rev-parse HEAD)
-          git tag -a RELEASES $commit_sha -m "Tagging last commit with RELEASES on successful build and test" --force
-          git push origin --tags --force
+          git tag -a "release-${{ steps.extract_version.outputs.version_number }}" -m "Release ${{ steps.extract_version.outputs.version_number }}"
+          git push origin --tags
