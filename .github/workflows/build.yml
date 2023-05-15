@@ -4,7 +4,7 @@ on:
     tags:
     - RELEASE
     branches:
-    - master
+    - main
   pull_request:
     types:
     - opened
@@ -12,7 +12,7 @@ on:
     - reopened
     - closed
     branches:
-    - master
+    - main
 env:
   IS_RELEASE_CANDIDATE: >-
     ${{
@@ -48,7 +48,7 @@ jobs:
   add_tag:
     if: >
       github.event.pull_request.merged &&
-      github.event.pull_request.base.ref == 'master' &&
+      github.event.pull_request.base.ref == 'main' &&
       startsWith(github.event.pull_request.title, 'RELEASES:') &&
       contains(github.event.pull_request.labels.*.name, 'RELEASES')
     runs-on: ubuntu-latest
@@ -60,7 +60,7 @@ jobs:
     - name: Extract Version Number
       id: extract_version
       run: |-
-        echo "::set-output name=version_number::$(grep -oP '(?<=<Version>)[^<]+' ADotNet/ADotNet.csproj)"
+        echo "::set-output name=version_number::$(grep -oP '(?<=<Version>)[^<]+' TstProj/TstProj.csproj)"
     - name: Print Version Number
       run: |-
         echo "Version number is ${{ steps.extract_version.outputs.version_number }}"
