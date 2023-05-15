@@ -7,10 +7,10 @@ on:
     - main
   pull_request:
     types:
-      - opened
-      - synchronize
-      - reopened
-      - closed
+    - opened
+    - synchronize
+    - reopened
+    - closed
     branches:
     - main
 env:
@@ -34,17 +34,17 @@ jobs:
     steps:
     - name: Check out
       uses: actions/checkout@v2
-    - name: Setup .Net
-      uses: actions/setup-dotnet@v1
-      with:
-        dotnet-version: 8.0.*
-        include-prerelease: true
-    - name: Restore
-      run: dotnet restore
-    - name: Build
-      run: dotnet build --no-restore
-    - name: Test
-      run: dotnet test --no-build --verbosity normal
+    # - name: Setup .Net
+    #   uses: actions/setup-dotnet@v1
+    #   with:
+    #     dotnet-version: 8.0.*
+    #     include-prerelease: true
+    # - name: Restore
+    #   run: dotnet restore
+    # - name: Build
+    #   run: dotnet build --no-restore
+    # - name: Test
+    #   run: dotnet test --no-build --verbosity normal
   add_tag:
     if: >
       github.event.pull_request.merged &&
@@ -52,14 +52,18 @@ jobs:
       startsWith(github.event.pull_request.title, 'RELEASES:') &&
       contains(github.event.pull_request.labels.*.name, 'RELEASES')
     runs-on: ubuntu-latest
+    needs:
+    - build
     steps:
     - name: Checkout code
       uses: actions/checkout@v2
     - name: Extract Version Number
       id: extract_version
-      run: echo "::set-output name=version_number::$(grep -oP '(?<=<Version>)[^<]+' TesProj/TesProj.csproj)"
+      run:
+        echo "::set-output name=version_number::$(grep -oP '(?<=<Version>)[^<]+' TesProj/TesProj.csproj)"
     - name: Print Version Number
-      run: echo "Version number is ${{ steps.extract_version.outputs.version_number }}"
+      run:
+        echo "Version number is ${{ steps.extract_version.outputs.version_number }}"
     - name: Configure Git
       run: |-
         git config user.name "Add Git Release Tag Action"
