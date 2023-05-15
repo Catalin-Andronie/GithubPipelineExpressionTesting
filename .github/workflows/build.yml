@@ -4,7 +4,7 @@ on:
     tags:
     - RELEASE
     branches:
-    - main
+    - master
   pull_request:
     types:
     - opened
@@ -12,7 +12,7 @@ on:
     - reopened
     - closed
     branches:
-    - main
+    - master
 env:
   IS_RELEASE_CANDIDATE: >-
     ${{
@@ -37,7 +37,7 @@ jobs:
     # - name: Setup .Net
     #   uses: actions/setup-dotnet@v1
     #   with:
-    #     dotnet-version: 8.0.*
+    #     dotnet-version: 7.0.100-preview.1.22110.4
     #     include-prerelease: true
     # - name: Restore
     #   run: dotnet restore
@@ -48,7 +48,7 @@ jobs:
   add_tag:
     if: >
       github.event.pull_request.merged &&
-      github.event.pull_request.base.ref == 'main' &&
+      github.event.pull_request.base.ref == 'master' &&
       startsWith(github.event.pull_request.title, 'RELEASES:') &&
       contains(github.event.pull_request.labels.*.name, 'RELEASES')
     runs-on: ubuntu-latest
@@ -59,10 +59,10 @@ jobs:
       uses: actions/checkout@v2
     - name: Extract Version Number
       id: extract_version
-      run:
-        echo "::set-output name=version_number::$(grep -oP '(?<=<Version>)[^<]+' TesProj/TesProj.csproj)"
+      run: |-
+        echo "::set-output name=version_number::$(grep -oP '(?<=<Version>)[^<]+' ADotNet/ADotNet.csproj)"
     - name: Print Version Number
-      run:
+      run: |-
         echo "Version number is ${{ steps.extract_version.outputs.version_number }}"
     - name: Configure Git
       run: |-
